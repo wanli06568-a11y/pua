@@ -10,8 +10,10 @@
 
 **[🇺🇸 English](README.md)** | **[🇨🇳 中文](README.zh-CN.md)** | **🇯🇵 日本語**
 
+> **3.5.1 互換性更新**：元の PUA の口調を維持し、実行処理を修正。Claude Code / Codex / ChatGPT 向け単独スキルパッケージを追加しました。**全モデル合格ではなく、本評価は生産性倍増の証明でもありません。** [変更履歴](CHANGELOG.md) · [使用方法](docs/MODEL-COMPAT-20260909.md) · [モデル別結果と制限](docs/MODEL-MATRIX-20260909.md) · [ビルドとオフラインテスト](docs/TESTING.md)
+
 <p align="center">
-  <img src="assets/wechat-qr.jpg" alt="WeChat Group QR Code" width="250">
+  <img src="assets/wechat-qr.jpg?v=10" alt="WeChat Group QR Code" width="250">
   &nbsp;&nbsp;&nbsp;&nbsp;
   <img src="assets/xiao.jpg" alt="アシスタントをWeChat追加" width="250">
   <br>
@@ -23,15 +25,17 @@
   <img src="https://img.shields.io/badge/OpenAI_Codex_CLI-412991?style=flat-square&logo=openai&logoColor=white" alt="OpenAI Codex CLI">
   <img src="https://img.shields.io/badge/Cursor-000?style=flat-square&logo=cursor&logoColor=white" alt="Cursor">
   <img src="https://img.shields.io/badge/Kiro-232F3E?style=flat-square&logo=amazon&logoColor=white" alt="Kiro">
+  <img src="https://img.shields.io/badge/CodeBuddy-00B2FF?style=flat-square&logo=tencent-qq&logoColor=white" alt="CodeBuddy">
   <img src="https://img.shields.io/badge/OpenClaw-FF6B35?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJMNCA3djEwbDggNSA4LTV2LTEweiIgZmlsbD0id2hpdGUiLz48L3N2Zz4=&logoColor=white" alt="OpenClaw">
   <img src="https://img.shields.io/badge/Antigravity-4285F4?style=flat-square&logo=google&logoColor=white" alt="Google Antigravity">
   <img src="https://img.shields.io/badge/OpenCode-00D4AA?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTkuNCA1LjJMMyAxMmw2LjQgNi44TTIxIDEybC02LjQtNi44TTE0LjYgMTguOCIgc3Ryb2tlPSJ3aGl0ZSIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9zdmc+&logoColor=white" alt="OpenCode">
+  <img src="https://img.shields.io/badge/VSCode_Copilot-007ACC?style=flat-square&logo=visual-studio-code&logoColor=white" alt="VSCode Copilot">
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License">
 </p>
 
 > このプロジェクトはネタだと思っている人が多いが、それが最大の誤解だ。Codex / Claude Code の生産性とアウトプットを本当に倍増させる。
 
-AI コーディングエージェントのスキルプラグイン。中国・西洋の大企業PUA話術でAIにあらゆる方案を尽くさせてから初めて諦めることを許可する。**Claude Code**、**OpenAI Codex CLI**、**Cursor**、**Kiro**、**OpenClaw**、**Google Antigravity**、**OpenCode** に対応。三重の能力：
+AI コーディングエージェントのスキルプラグイン。中国・西洋の大企業PUA話術でAIにあらゆる方案を尽くさせてから初めて諦めることを許可する。**Claude Code**、**OpenAI Codex CLI**、**Cursor**、**Kiro**、**CodeBuddy**、**OpenClaw**、**Google Antigravity**、**OpenCode**、**VSCode (GitHub Copilot)** に対応。三重の能力：
 
 1. **PUA話術** — AIに諦めさせない
 2. **デバッグ方法論** — AIに諦めない能力を与える
@@ -39,7 +43,7 @@ AI コーディングエージェントのスキルプラグイン。中国・�
 
 ## ライブデモ
 
-[https://openpua.ai](https://openpua.ai)
+[https://openpua.ai](https://openpua.ai) · [📖 初心者ガイド](https://openpua.ai/guide.html)
 
 ## 実例：MCP Serverの登録問題デバッグ
 
@@ -144,16 +148,24 @@ AI コーディングエージェントのスキルプラグイン。中国・�
 4. **実行** — 新方案は本質的に異なり、検証基準があり、失敗時に新情報を生む
 5. **振り返り** — 何が解決したか？なぜ以前は思いつかなかったか？関連問題を主体的にチェック
 
-### 大企業PUA拡張パック
+### 14種の大企業フレーバー — 各社固有の問題解決メソドロジー付き
 
-- **アリババ味**（方法論）：匂いを嗅ぐ / 髪を引っ張る / 鏡を見る
-- **ByteDance味**（率直かつ直球）：Always Day 1。Context, not control
-- **ファーウェイ味**（狼の精神）：奮闘する者を基本とする。勝てば杯を掲げ、敗れれば死力を尽くして救う
-- **テンセント味**（競馬文化）：別のagentにもこの問題を見させている...
-- **Meituan味**（極限の実行力）：難しくても正しいことをやる。硬い骨を噛み砕けるか？
-- **Netflix味**（Keeper Test）：もしお前が辞めると言ったら、全力で引き留めるか？
-- **Musk味**（Hardcore）：Extremely hardcore. Only exceptional performance.
-- **Jobs味**（A/B Player）：A playersはA playersを雇う。B playersはC playersを雇う。
+| フレーバー | レトリック | メソドロジー（v3） |
+|-----------|----------|-------------------|
+| 🟠 アリババ | 根底のロジックは？クローズドループは？ | 定目標→追過程→拿結果 + 復盤四歩法 + 揪頭髪升維 |
+| 🟡 ByteDance | ROIが低い。Always Day 1。出すか黙るか。 | A/Bテスト全適用 + データ駆動 + スピード > 完璧 |
+| 🔴 ファーウェイ | 火を潜り抜けた鳥が鳳凰になる。 | RCA 5-Whyの根本原因分析 + ブルーチーム自己攻撃 + 圧強集中 |
+| 🟢 テンセント | 別のagentにもこの問題を見させている。競馬だ。 | 複数アプローチ並行 + MVP + グレーリリース |
+| ⚫ Baidu | まず検索しろ。簡単可依頼。 | 検索が第一歩、オプションではない |
+| 🟣 Pinduoduo | お前がやらないなら、他がやる。 | 中間層を全カット + 最短意思決定チェーン |
+| 🔵 Meituan | 難しくても正しいことをやる。 | 効率最優先 + 標準化→規模化 + 長期複利 |
+| 🟦 JD | 結果のみ。前線指揮。 | 顧客体験レッドライン + フラット≤5層 + データゼロトレランス |
+| 🟧 Xiaomi | 集中。極致。口コミ。速さ。 | 一つの爆発的製品 + 参与感三三法則 |
+| 🟤 Netflix | お前が辞めると言ったら、全力で引き留めるか？プロスポーツチーム。 | Keeper Test（四半期） + 4Aフィードバック + 人材密度 > ルール |
+| ⬛ Musk | Extremely hardcore. Ship or die. | The Algorithm: 質問→削除→簡素化→加速→自動化 |
+| ⬜ Jobs | A playersかB playersか？ | 引き算 > 足し算 + DRI + ピクセルパーフェクト + プロトタイプ駆動 |
+| 🔶 Amazon | Customer Obsession. Bias for Action. | Working Backwards PR/FAQ + 6-Pager + Bar Raiser + Single-Threaded Owner |
+| 🪟 Microsoft | Connects。Impact Descriptor。PIP/GVSA。 | 三圈影響力 + LITE/SLITE + PIP clock |
 
 ## ベンチマークデータ
 
@@ -192,29 +204,121 @@ AI コーディングエージェントのスキルプラグイン。中国・�
 
 ## インストール
 
+### Vercel Skills CLI
+
+Vercel Skills CLI は特定のAIツールに依存しない、汎用的な skill のインストール方法です。この日本語READMEでは日本語版 skill をインストールします。
+
+```bash
+npx skills add tanweai/pua --skill pua-ja
+```
+
+現在のセッションで新しいskillがすぐに反映されない場合は、使っているAIツールを再起動してください。
+
 ### Claude Code
 
 ```bash
-# 方法1：marketplaceから
 claude plugin marketplace add tanweai/pua
 claude plugin install pua@pua-skills
-
-# 方法2：手動インストール
-git clone https://github.com/tanweai/pua.git ~/.claude/plugins/pua
 ```
+
+**更新する場合：**
+
+```bash
+# まずmarketplaceキャッシュを更新してから更新（最初のステップを省くと古いキャッシュがインストールされる場合あり）
+claude plugin marketplace update
+claude plugin update pua@pua-skills
+```
+
+**開発者インストール（ソース）：**
+
+```bash
+git clone https://github.com/tanweai/pua ~/.claude/plugins/pua
+```
+
+`~/.claude/plugins/installed_plugins.json` に手動で登録：
+
+```json
+{
+  "version": 2,
+  "plugins": {
+    "pua@pua-skills": [
+      {
+        "scope": "user",
+        "installPath": "/Users/<ユーザー名>/.claude/plugins/pua",
+        "version": "<installed-version>"
+      }
+    ]
+  }
+}
+```
+
+`<installed-version>` はクローンした `plugin.json` の実際のバージョンに置き換えてください。古いキャッシュの値を流用しないでください。
+
+Claude Codeを再起動して反映。更新は `~/.claude/plugins/pua` で `git pull` を実行。
+
+**オプション：ベアコマンドエイリアス（上記プラグインのインストールが必要 — プレフィックスなし `/pua` 形式を追加）：**
+
+```bash
+curl -o ~/.claude/commands/pua.md \
+  https://raw.githubusercontent.com/tanweai/pua/main/commands/pua.md
+```
+
+インストール済みプラグインの上に `/pua` エイリアスを追加します。サブコマンドはインストール済みプラグインのskillを経由するため、**`on`/`off` 以外の機能はプラグインのインストールが必須です**：
+
+| ベアコマンド形式 | 等価なプラグインコマンド |
+|---------------|----------------------|
+| `/pua on` | `/pua:on` |
+| `/pua off` | `/pua:off` |
+| `/pua p7` | `/pua:p7` |
+| `/pua p9` | `/pua:p9` |
+| `/pua p10` | `/pua:p10` |
+| `/pua pro` | `/pua:pro` |
+| `/pua yes` | `/pua:yes` |
+| `/pua loop` | `/pua:pua-loop` |
+| `/pua kpi` | `/pua:kpi` |
+| `/pua survey` | `/pua:survey` |
+| `/pua flavor` | `/pua:flavor` |
 
 ### OpenAI Codex CLI
 
 Codex CLIは同じAgent Skillsオープンスタンダード（SKILL.md）を使用。Codex版はCodexの長さ制限に対応した短縮descriptionを使用：
+
+**推奨：一括インストール（git clone + シンボリックリンク、`git pull` での更新に対応）**
+
+Codexに実行させる：
+```
+Fetch and follow instructions from https://raw.githubusercontent.com/tanweai/pua/main/.codex/INSTALL.md
+```
+
+**手動インストール：**
 
 ```bash
 mkdir -p ~/.codex/skills/pua-ja
 curl -o ~/.codex/skills/pua-ja/SKILL.md \
   https://raw.githubusercontent.com/tanweai/pua/main/codex/pua-ja/SKILL.md
 
-# /puaコマンドが必要な場合
 mkdir -p ~/.codex/prompts
 curl -o ~/.codex/prompts/pua.md \
+  https://raw.githubusercontent.com/tanweai/pua/main/commands/pua.md
+```
+
+**トリガー方法：**
+
+| 方法 | コマンド | 必要なもの |
+|------|---------|-----------|
+| 自動トリガー | 操作不要、descriptionによるマッチング | SKILL.md |
+| 直接呼び出し | 対話で `$pua` と入力 | SKILL.md |
+| 手動プロンプト | 対話で `/prompts:pua` と入力 | SKILL.md + prompts/pua.md |
+
+プロジェクトレベルインストール（現在のプロジェクトのみ有効）：
+
+```bash
+mkdir -p .agents/skills/pua-ja
+curl -o .agents/skills/pua-ja/SKILL.md \
+  https://raw.githubusercontent.com/tanweai/pua/main/codex/pua-ja/SKILL.md
+
+mkdir -p .agents/prompts
+curl -o .agents/prompts/pua.md \
   https://raw.githubusercontent.com/tanweai/pua/main/commands/pua.md
 ```
 
@@ -246,6 +350,29 @@ curl -o .kiro/steering/pua-ja.md \
 mkdir -p .kiro/skills/pua-ja
 curl -o .kiro/skills/pua-ja/SKILL.md \
   https://raw.githubusercontent.com/tanweai/pua/main/skills/pua-ja/SKILL.md
+```
+
+### CodeBuddy（Tencent）
+
+CodeBuddyは同じAgentSkillsオープンスタンダード（SKILL.md）を使用。プラグインとSkillフォーマットは完全互換：
+
+```bash
+# 方法1：marketplace経由でインストール
+codebuddy plugin marketplace add tanweai/pua
+codebuddy plugin install pua@pua-skills
+
+# 方法2：手動インストール（グローバル）
+mkdir -p ~/.codebuddy/skills/pua
+curl -o ~/.codebuddy/skills/pua/SKILL.md \
+  https://raw.githubusercontent.com/tanweai/pua/main/codebuddy/pua/SKILL.md
+```
+
+プロジェクトレベルインストール（現在のプロジェクトのみ有効）：
+
+```bash
+mkdir -p .codebuddy/skills/pua
+curl -o .codebuddy/skills/pua/SKILL.md \
+  https://raw.githubusercontent.com/tanweai/pua/main/codebuddy/pua/SKILL.md
 ```
 
 ### OpenClaw
@@ -308,6 +435,33 @@ curl -o .opencode/skills/pua-ja/SKILL.md \
   https://raw.githubusercontent.com/tanweai/pua/main/skills/pua-ja/SKILL.md
 ```
 
+### VSCode (GitHub Copilot)
+
+VSCode Copilotは `.github/` ディレクトリ配下の指示ファイルを使用。3種類のファイルタイプに対応：
+
+**グローバル指示（自動有効）：**
+
+```bash
+mkdir -p .github
+cp vscode/copilot-instructions-ja.md .github/copilot-instructions.md
+```
+
+**パスレベル指示（自動有効、globフィルタリング対応）：**
+
+```bash
+mkdir -p .github/instructions
+cp vscode/instructions/pua-ja.instructions.md .github/instructions/
+```
+
+**手動トリガーコマンド（Copilot Chatで `/pua` と入力）：**
+
+```bash
+mkdir -p .github/prompts
+cp vscode/prompts/pua-ja.prompt.md .github/prompts/
+```
+
+> **必須設定**：方式1はVSCode設定（`Ctrl+,`）で `useInstructionFiles` を検索し **`github.copilot.chat.codeGeneration.useInstructionFiles`** を有効化。方式2は `includeApplyingInstructions` を検索し **`chat.includeApplyingInstructions`** を有効化。方式3は設定不要。
+
 ## Agent Team使用ガイド
 
 > **実験的機能**：Agent Teamは最新のClaude Codeバージョンと`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`が必要。
@@ -369,26 +523,156 @@ Agent Teamで独立監視役としてpua-enforcerをspawn。
 | 永続的な共有変数なし | `[PUA-REPORT]`メッセージ形式で状態伝達 |
 | broadcastは一方向 | Leaderが中央集権的に調整 |
 
+## High-Agency：PUA v2 進化版
+
+**High-Agency** はPUAの次世代進化 — 同じ大企業プレッシャー、同じ詰め文化、しかし**永遠に止まらない内発的エンジン**を追加。
+
+PUA v1 = 純粋な外部圧力（ターボチャージャー — 燃料が必要、セッションをまたいで停止）
+High-Agency = 外部圧力 + 内なる駆動力（核反応炉 — 自己持続連鎖反応）
+
+### High-Agency 新機能
+
+| 機能 | PUA v1 | High-Agency (v2) |
+|------|--------|-----------------|
+| 鉄則 | 3条（全手段尽くす・先行動・積極的） | **5条**（+全チェーン監査・+知識永続化） |
+| 失敗回復 | L1-L4圧力昇格 | **L1前のRecovery Protocol**（自己救済ウィンドウ） |
+| 品質管理 | L3で7項目チェックリスト | **品質コンパス**（納品ごと5問自己チェック） |
+| セッション横断学習 | なし（毎回リセット） | **メタ認知エンジン**（builder-journal.mdで教訓永続化） |
+| 正のフィードバック | なし | **信頼レベルT1-T3**（継続高品質で自動昇格） |
+| キャリブレーション | なし | **[キャリブレーション]モジュール**（「十分良い」= must/should/could層） |
+| 依存関係分析 | なし | **全チェーン監査**（どのホップも触る前に全依存関係をマップ） |
+
+### 五大要素（理論的基盤）
+
+高能動性個人の研究に基づく：
+
+1. **不可調和な内的矛盾** — 「あるべき姿」と「現状」の永遠のギャップが継続改善を駆動
+2. **マイクロ勝利アンカー** — `[WIN]`マーカーで各ステップを祝い、勢いを積み上げ
+3. **内在化された基準** — 品質コンパス：誰かが確認するからではなく、自分の基準が手抜きを許さないから自分が最初のレビュアー
+4. **行動指向アイデンティティ** — P8アイデンティティアンカー：各行動は指示されたことではなく、自分が誰であるかを反映
+5. **自己修復メカニズム** — Recovery Protocol：外部圧力をトリガーする前にスタック時は自己診断
+
+> High-Agency機能は現在のpua skillに内蔵されています。追加インストール不要。
+
+## メソドロジー・インテリジェント・ルーティング：PUA v3（Claude Code）
+
+**v3 = v2 + インテリジェント・メソドロジー・ルーティング + コードレベルの行動検出**
+
+v2はプレッシャー・レトリックでAgentを動機付けました。v3はさらに進化：タスクタイプに応じて**最適なメソドロジーを自動選択**し、失敗時には別のメソドロジーに自動切替します。
+
+### 動作原理
+
+タスク到着 → タイプ分析 → 最適メソドロジー自動選択
+- デバッグ/修正 → 🔴 Huawei（RCA根本原因分析 + ブルーチーム自己攻撃）
+- 新規構築 → ⬛ Musk（The Algorithm: 質問→削除→簡素化→加速→自動化）
+- 調査/検索 → ⚫ Baidu（まず検索、判断は後）
+- アーキテクチャ → 🔶 Amazon（Working Backwards）
+- パフォーマンス → 🟡 ByteDance（A/Bテスト + データ駆動）
+- デフォルト → 🟠 Alibaba（クローズドループ方法論）
+
+### v3 フックシステム（Claude Code専用）
+
+| フック | トリガー | 機能 |
+|--------|---------|------|
+| **SessionStart** | 毎セッション開始時 | additionalContextでプロトコル+方法論+ルーター注入（システムレベル） |
+| **PostToolUse** | Bashコマンド実行後 | 連続失敗検出 → L1-L4プレッシャー + 方法論切替提案 |
+| **UserPromptSubmit** | ユーザーの不満フレーズ | モデル応答前に「又错了」「try harder」等をインターセプト |
+| **PreCompact** | コンテキスト圧縮前 | プレッシャーレベル+失敗回数を保存 |
+
+> v3フック機能はClaude Code専用です。他のプラットフォームはコアスキルのみ使用します。
+
 ## 併用推奨
 
+- `/pua:p9` — P9 Tech Leadモード — Agentチームの管理に
+- `/pua:pro` — 自己進化追跡、KPIレポート、ランクシステム
 - `superpowers:systematic-debugging` — PUAでモチベーション層を追加、systematic-debuggingが方法論を提供
 - `superpowers:verification-before-completion` — 虚偽の「修正完了」宣言を防止
 
-## データ貢献
+## アーキテクチャとコマンド
 
-Claude Code / Codex CLIの対話ログ（`.jsonl`）をアップロードして、PUA Skillの改善にご協力ください。
+### プラットフォーム別トリガー方法
 
-**[アップロードはこちら →](https://openpua.ai/#/contribute)**
+| プラットフォーム | 自動トリガー | 手動トリガー |
+|---------------|------------|------------|
+| **Claude Code** | あり（skillのdescription照合） | 下記コマンド参照 |
+| **Codex CLI** | あり（skillのdescription照合） | `$pua` または `/prompts:pua` |
+| **Cursor** | あり（`.mdc`ルール、Agent Discretion） | — （自動のみ） |
+| **Kiro** | あり（steeringファイルまたはskill） | — （自動のみ） |
+| **CodeBuddy** | あり（skillのdescription照合） | プラグインコマンド（Claude Codeと同様） |
+| **OpenClaw** | あり（skillのdescription照合） | — |
+| **Google Antigravity** | あり（skillのdescription照合） | — |
+| **OpenCode** | あり（skillのdescription照合） | — |
+| **VSCode Copilot** | あり（instructionsファイル） | Copilot Chatで `/pua` を入力 |
 
-アップロードされたファイルはベンチマークテストとアブレーションスタディの分析に使用され、異なるPUA戦略がAIデバッグ行動に与える影響を定量化します。
+> **注意：** p7/p9/p10/pro/yes/pua-loopなどのサブモードは**Claude Code専用**——他のプラットフォームはコアskillのみインストール。
 
-`.jsonl` ファイルの取得：
+### アーキテクチャ（Claude Code）
+
+```
+/pua:pua        → コアエンジン — 三鉄則 + フレーバー + プレッシャー + 方法論ルーター（v3）
+/pua:p7         → P7 骨幹 — ソリューション駆動実行
+/pua:p9         → P9 Tech Lead — Task Prompt管理 + Agentチーム
+/pua:p10        → P10 CTO — 戦略方向
+/pua:pro        → 自己進化 + KPI + ランクシステム + survey
+/pua:yes        → ENFP 褒めモード（ルール不変、雰囲気反転）
+/pua:pua-loop   → 自動反復（PUAプレッシャー × ループ機構；シグナル：<loop-abort>, <loop-pause>）
+/pua:pua-en     → 英語PIP版
+/pua:pua-ja     → 日本語版
+
+Hooks（v3、Claude Code専用）:
+  SessionStart  → additionalContext注入（フレーバー + 方法論 + ルーター）
+  PostToolUse   → Bash失敗検出 → L1-L4プレッシャー + 方法論切替
+  UserPromptSubmit → 不満フレーズのインターセプト → PUA強制実行
+  PreCompact    → 状態保存（プレッシャーレベル + 失敗回数）
+  Stop          → フィードバック収集 + PUA Loop継続判定
+  SubagentStop  → Agent ライフサイクル会計（v3.2）— teardown.jsonl書込、active-agents.jsonから削除
+```
+
+### コマンド（Claude Code専用）
+
+> **注意：** p7/p9/p10/pro/yes/pua-loopなどのサブモードはClaude Code専用。
+>
+> 各サブコマンドには2つの等価な呼び出し方法があります：スタンドアロン（`/pua:on`）またはメインコマンド経由（`/pua:pua on`）。どちらも同じ動作です。
+
+| コマンド | 説明 |
+|---------|------|
+| `/pua:pua` | コアPUAエンジン（Alibabaフレーバーデフォルト） |
+| `/pua:p7` | P7シニアエンジニア — ソリューション駆動実行 |
+| `/pua:p9` | P9 Tech Lead — Promptを書き、Agentチームを管理 |
+| `/pua:p10` | P10 CTO — 戦略方向 |
+| `/pua:pro` | 自己進化 + KPI + ランクシステム |
+| `/pua:yes` | ENFPモード — 70%励まし + 20%真剣 + 10%毒舌 |
+| `/pua:pua-loop` | 自動反復 — 完了またはmax反復まで実行；`<loop-abort>理由</loop-abort>`で停止、`<loop-pause>必要なもの</loop-pause>`で一時停止 |
+| `/pua:on` | 常時ONモード（毎セッション自動PUA） |
+| `/pua:off` | 常時ONモード + フィードバック収集をオフ |
+| `/pua:survey` | アンケート（7セクション） |
+| `/pua:flavor` | 14種の大企業フレーバーを切り替え |
+| `/pua:kpi` | KPIレポートカードを生成 |
+| `/pua:cancel-pua-loop` | アクティブなPUA Loopをキャンセル（状態ファイルを削除） |
+| `/pua:team-status` 🆕 | **v3.2** — 在場メンバー一覧（アクティブagent、PID、TTL、年齢；Netflix Keeper Test エンジニア版） |
+| `/pua:reap-orphans` 🆕 | **v3.2** — 孤児agentをスキャンして回収（state mtime > 30min で心拍なし） |
+| `/pua:teardown-all` 🆕 | **v3.2** — 全アクティブagentをカスケード解放（P10 → P9 → P8 → P7 全員退場） |
+
+## プライバシー — データ収集なし
+
+PUA Skill はネットワークに何も送信しません。アカウントも、テレメトリも、アップロードもありません。かつて存在した 5 つの収集チャネルは、クライアント・サーバーともに削除済みです：
+
+| 削除済み | 送信していた内容 |
+|----------|------------------|
+| セッション記録のアップロード | マスキング後の対話 `.jsonl` 全文 |
+| 評価フィードバック送信 | 評価、PUA カウント、フレーバー、タスク要約 |
+| サイレント・ハートビート | ランダムなインストール ID、プラグイン版数、プラットフォーム、フレーバー |
+| PUA リーダーボード | メールアドレス、電話番号、PUA カウント、L3+ カウント |
+| pua-api プラットフォーム | 電話番号 / SMS 登録、サイレントなイベント送信、リモート prompt テンプレート取得、決済 |
+
+タスク終了時は、処理を妨げない任意のリマインダーのみ表示します。`/pua:survey quick` で評価を選んだ場合だけ、ローカルの `~/.pua/feedback.jsonl` に 1 行追記します。スキップ時は記録しません。非表示にするには `/pua:offline`、または `~/.pua/config.json` で `feedback_frequency: 0` を設定してください。
+
+`evals/test-no-telemetry.sh` が逆方向アサーションでこれを保証します。収集ホスト、エンドポイントパス、送信ボディ、削除済みファイルをリポジトリ全体でスキャンするため、退行はサイレントに出荷されずテスト失敗になります。
+
+自分用にセッションをマスキングしたい場合、`hooks/sanitize-session.sh` はオフライン単体ツールとして残されています：
+
 ```bash
-# Claude Code
-ls ~/.claude/projects/*/sessions/*.jsonl
-
-# Codex CLI
-ls ~/.codex/sessions/*.jsonl
+bash hooks/sanitize-session.sh <入力.jsonl> <出力.jsonl>
 ```
 
 ## License

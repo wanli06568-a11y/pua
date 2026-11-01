@@ -1,0 +1,39 @@
+{
+    "name": "pua",
+    "version": "3.5.1",
+    "description": "Opt-in productivity coaching for CodeBuddy. Use for explicit PUA/try-harder requests, repeated-failure frustration, retry/change-approach requests, completion checks, evidence requests, and Ding-style workplace reminders.",
+    "author": {
+        "name": "探微安全实验室",
+        "url": "https://github.com/tanweai"
+    },
+    "homepage": "https://github.com/tanweai/pua",
+    "repository": "https://github.com/tanweai/pua",
+    "license": "MIT",
+    "keywords": [
+        "pua",
+        "motivation",
+        "productivity",
+        "try-harder",
+        "retry",
+        "change-approach",
+        "frustration",
+        "quality-check",
+        "completion-checks",
+        "verify-before-done",
+        "evidence-first",
+        "delivery-quality",
+        "workplace-reminders",
+        "workplace-process",
+        "ding-style",
+        "structured-troubleshooting",
+        "corporate-culture",
+        "methodology",
+        "offline",
+        "diagnosis-first",
+        "cloudflare",
+        "feedback",
+        "jsonl",
+        "codebuddy"
+    ],
+    "category": "Productivity"
+}

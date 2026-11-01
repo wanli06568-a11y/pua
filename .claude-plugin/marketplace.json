@@ -1,20 +1,20 @@
 {
-  "name": "pua-skills",
-  "description": "PUA Motivator for Claude Code -- forces AI to exhaust all solutions before giving up, using corporate PUA rhetoric from Chinese and Western tech giants",
-  "owner": {
-    "name": "探微安全实验室",
-    "url": "https://github.com/tanweai"
-  },
-  "plugins": [
-    {
-      "name": "pua",
-      "description": "PUA Motivator -- forces Claude Code to exhaust all solutions before giving up, using corporate PUA rhetoric (Alibaba, ByteDance, Huawei, Tencent, Netflix, Musk, Jobs)",
-      "version": "1.1.1",
-      "source": "./",
-      "author": {
+    "name": "pua-skills",
+    "description": "PUA skills: opt-in productivity coaching for try-harder moments, repeated-failure troubleshooting, evidence-first completion checks, and Ding-style workplace reminders.",
+    "owner": {
         "name": "探微安全实验室",
         "url": "https://github.com/tanweai"
-      }
-    }
-  ]
+    },
+    "plugins": [
+        {
+            "name": "pua",
+            "description": "PUA productivity coaching — modular skills, 15 workplace/corporate flavors including Ding Inside/Outside, completion-quality checks, retry/change-approach reminders, and feedback tools.",
+            "version": "3.5.1",
+            "source": "./",
+            "author": {
+                "name": "探微安全实验室",
+                "url": "https://github.com/tanweai"
+            }
+        }
+    ]
 }

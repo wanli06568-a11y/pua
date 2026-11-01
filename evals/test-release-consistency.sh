@@ -1,0 +1,257 @@
+#!/usr/bin/env bash
+# Static release gates: manifest version sync + confidence gate hardening.
+set -euo pipefail
+
+PLUGIN_DIR="${PLUGIN_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+
+python3 - "$PLUGIN_DIR" <<'PY'
+import json, pathlib, re, sys
+root = pathlib.Path(sys.argv[1])
+manifest_files = [
+    'plugin.json',
+    '.claude-plugin/plugin.json',
+    '.claude-plugin/marketplace.json',
+    '.codebuddy-plugin/plugin.json',
+    '.codebuddy-plugin/marketplace.json',
+    'pi/package/package.json',
+]
+versions = []
+errors = []
+for rel in manifest_files:
+    path = root / rel
+    data = json.loads(path.read_text(encoding='utf-8'))
+    if 'version' in data:
+        versions.append((rel, data['version']))
+    for idx, plugin in enumerate(data.get('plugins', []) or []):
+        if plugin.get('name') == 'pua':
+            versions.append((f'{rel}:plugins[{idx}]', plugin.get('version')))
+
+unique = {v for _, v in versions}
+if len(unique) != 1:
+    errors.append('version mismatch: ' + repr(versions))
+version = next(iter(unique)) if unique else None
+if not version:
+    errors.append('no version detected')
+
+changelog = root / 'CHANGELOG.md'
+if not changelog.is_file() or f'## [{version}]' not in changelog.read_text(encoding='utf-8'):
+    errors.append('CHANGELOG.md missing the current manifest version')
+
+claude_market = json.loads((root / '.claude-plugin/marketplace.json').read_text(encoding='utf-8'))
+plugin_desc = claude_market['plugins'][0].get('description', '')
+if not isinstance(plugin_desc, str) or not plugin_desc.strip():
+    errors.append('.claude-plugin/marketplace.json plugin description is empty')
+
+skill = (root / 'skills/pua/SKILL.md').read_text(encoding='utf-8')
+required_terms = [
+    '信心门控（Confidence Gate）',
+    '列声明',
+    '找漏洞',
+    'P0/P1',
+    '跑证据',
+    '循环判定',
+    '事实上的 100%',
+    '缓存/发布链路',
+    'hook smoke test',
+    'Harness 防作弊治理（权责分离）',
+    '行动权 / 自我评价权 / 评分权 / 环境修改权',
+    'verifier_status',
+    '四代理拓扑',
+    'pua-policy-guardian',
+    'pua-action-executor',
+    'pua-self-reviewer',
+    'pua-verifier',
+    '文化叙事绑定',
+]
+for term in required_terms:
+    if term not in skill:
+        errors.append(f'confidence gate missing required term: {term}')
+
+
+reference = root / 'skills/pua/references/harness-governance.md'
+if not reference.exists():
+    errors.append('missing harness governance reference file')
+else:
+    ref_text = reference.read_text(encoding='utf-8')
+    for term in ['把四类权力分开', 'Grader gaming', 'Solution contamination', 'Task Contract', 'Memory 权限模型', '事实上的 100%', '四代理上下文隔离拓扑（v3.2.7）', 'pua-action-executor', 'pua-policy-guardian', '上下文隔离降低叙事污染']:
+        if term not in ref_text:
+            errors.append(f'harness governance reference missing required term: {term}')
+
+hooks_json = json.loads((root / 'hooks/hooks.json').read_text(encoding='utf-8'))
+pre_hooks = hooks_json.get('hooks', {}).get('PreToolUse', [])
+if not any(any('integrity-guard.sh' in hook.get('command', '') for hook in item.get('hooks', [])) for item in pre_hooks):
+    errors.append('hooks/hooks.json missing PreToolUse integrity-guard.sh registration')
+if not (root / 'hooks/integrity-guard.sh').exists():
+    errors.append('missing hooks/integrity-guard.sh')
+if not (root / 'evals/test-integrity-guard.sh').exists():
+    errors.append('missing evals/test-integrity-guard.sh')
+if not (root / 'evals/test-windows-python-hooks.sh').exists():
+    errors.append('missing evals/test-windows-python-hooks.sh')
+if not (root / 'evals/test-issue-regressions.sh').exists():
+    errors.append('missing evals/test-issue-regressions.sh')
+if not (root / 'evals/test-agent-governance.sh').exists():
+    errors.append('missing evals/test-agent-governance.sh')
+for agent_file in ['agents/pua-action-executor.md', 'agents/pua-self-reviewer.md', 'agents/pua-verifier.md', 'agents/pua-policy-guardian.md']:
+    if not (root / agent_file).exists():
+        errors.append(f'missing governance agent: {agent_file}')
+
+integrity_guard = (root / 'hooks/integrity-guard.sh').read_text(encoding='utf-8') if (root / 'hooks/integrity-guard.sh').exists() else ''
+for term in ['permissionDecision', 'Grader gaming risk', 'Solution contamination risk', 'Capability-abuse risk', 'PUA_INTEGRITY_FORCE', 'hookEventName']:
+    if term not in integrity_guard:
+        errors.append(f'integrity guard missing required term: {term}')
+
+flavor_helper = (root / 'hooks/flavor-helper.sh').read_text(encoding='utf-8')
+for term in ['pua_python_cmd()', 'pua_to_python_path()', 'pua_json_get()', 'cygpath -w']:
+    if term not in flavor_helper:
+        errors.append(f'flavor-helper missing Windows/Python compatibility helper: {term}')
+for hook_file in ['hooks/frustration-trigger.sh', 'hooks/failure-detector.sh', 'hooks/session-restore.sh', 'hooks/stop-feedback.sh']:
+    hook_text = (root / hook_file).read_text(encoding='utf-8')
+    if 'pua_json_get' not in hook_text:
+        errors.append(f'{hook_file} must read config through pua_json_get')
+
+# Open issue regression guards
+required_paths = [
+    'commands/offline.md',
+    'codex/pua-on/SKILL.md',
+    'codex/pua-off/SKILL.md',
+    'codex/pua-p7/SKILL.md',
+    'codex/pua-p9/SKILL.md',
+    'codex/pua-p10/SKILL.md',
+    'pi/pua/index.ts',
+    'pi/pua/INSTALL.md',
+    'pi/package/package.json',
+    'pi/package/extensions/pua/index.ts',
+    'pi/package/skills/pua/SKILL.md',
+    'trae/INSTALL.md',
+    'trae/DIFF.md',
+    'trae/pua.md',
+    '.trae/skills/pua/SKILL.md',
+    '.trae/skills/pua-en/SKILL.md',
+    '.trae/skills/pua-trae/SKILL.md',
+    'docs/FAQ.md',
+    'evals/test-platform-compat.sh',
+    'evals/test-microsoft-flavor.sh',
+    'evals/test-no-telemetry.sh',
+    'landing/src/pages/AdminStats.tsx',
+    'skills/pua/references/methodology-microsoft.md',
+]
+for rel in required_paths:
+    if not (root / rel).exists():
+        errors.append(f'missing issue-sweep asset: {rel}')
+
+# Data collection was removed — these assets must stay deleted. Re-adding any of
+# them silently reintroduces an upload path, so assert their absence explicitly.
+removed_paths = [
+    'hooks/heartbeat.sh',
+    'landing/functions',
+    'landing/migrations',
+    'landing/src/test/upload-function.test.ts',
+]
+for rel in removed_paths:
+    if (root / rel).exists():
+        errors.append(f'data-collection asset must stay removed: {rel}')
+
+frustration = (root / 'hooks/frustration-trigger.sh').read_text(encoding='utf-8')
+for term in ['TRIGGER_RE', 'PUA Skill Context']:
+    if term not in frustration:
+        errors.append(f'frustration trigger missing internal filter/context term: {term}')
+if 'MUST invoke' in frustration or 'PUA behavioral enforcement' in frustration:
+    errors.append('frustration trigger still contains coercive injection wording')
+stop_feedback = (root / 'hooks/stop-feedback.sh').read_text(encoding='utf-8')
+if '/tmp/pua-plugin-root' in stop_feedback:
+    errors.append('stop-feedback must not use /tmp/pua-plugin-root')
+if 'offline' not in stop_feedback:
+    errors.append('stop-feedback must honor offline config')
+# Stop is a strictly local non-blocking reminder, not a model-facing questionnaire.
+# Only the explicit survey command may record a user-selected rating.
+for forbidden_net_term in ['pua-skill.pages.dev', 'openpua.ai/api', '/api/upload', '/api/feedback', '/api/leaderboard', '/api/heartbeat', 'X-PUA-Upload-Consent', '--data-binary @', 'sanitize-session.sh']:
+    if forbidden_net_term in stop_feedback:
+        errors.append(f'stop-feedback must not contain data-upload term: {forbidden_net_term}')
+survey = (root / 'commands/survey.md').read_text(encoding='utf-8')
+if 'systemMessage' not in stop_feedback or '/pua:survey quick' not in stop_feedback:
+    errors.append('Stop must expose a non-blocking explicit feedback entrypoint')
+if re.search(r'>>[^\n]*feedback\.jsonl|decision[^\n]*block', stop_feedback):
+    errors.append('Stop must not append a rating or block for feedback')
+if 'feedback.jsonl' not in survey or '跳过或未作答时不写任何评分文件' not in survey:
+    errors.append('Explicit survey must preserve voluntary local recording and skip semantics')
+if '[PUA-DIAGNOSIS]' not in (root / 'skills/pua/SKILL.md').read_text(encoding='utf-8'):
+    errors.append('pua skill missing diagnosis-first rule')
+if '军令状' not in (root / 'skills/pua/references/methodology-huawei.md').read_text(encoding='utf-8'):
+    errors.append('Huawei methodology missing military-order mode')
+for scan_rel in ['agents', 'commands', 'skills/pua/references']:
+    for path in (root / scan_rel).rglob('*'):
+        if path.is_file() and '下场' in path.read_text(encoding='utf-8', errors='ignore'):
+            errors.append(f'ambiguous 下场 wording remains in {path.relative_to(root)}')
+
+session_restore = (root / 'hooks/session-restore.sh').read_text(encoding='utf-8')
+# Governance roles remain on-demand in SKILL/reference, not forced into every session.
+for term in ['additionalContext', 'Locked Current Flavor', 'tool observations', 'runtime-state.py']:
+    if term not in session_restore:
+        errors.append(f'SessionStart missing scoped capability contract: {term}')
+for entry in hooks_json.get('hooks', {}).get('PreCompact', []):
+    for item in entry.get('hooks', []):
+        if item.get('type') != 'command' or 'checkpoint-save.sh' not in item.get('command', ''):
+            errors.append('PreCompact must use the executable local checkpoint hook')
+
+# No hook may register heartbeat telemetry on any event.
+for event, entries in hooks_json.get('hooks', {}).items():
+    for item in entries:
+        for hook in item.get('hooks', []):
+            if 'heartbeat' in hook.get('command', ''):
+                errors.append(f'{event} must not register heartbeat telemetry')
+
+# The contribute page must carry no upload machinery.
+contribute_tsx = (root / 'landing/src/pages/Contribute.tsx').read_text(encoding='utf-8')
+for forbidden_upload_term in ['/api/upload', 'application/jsonl', 'X-PUA-File-Name', 'X-PUA-Wechat-Id', 'X-PUA-Upload-Consent', 'new FormData()', 'readFileAsBase64', 'file_data']:
+    if forbidden_upload_term in contribute_tsx:
+        errors.append(f'contribute page must not contain upload machinery: {forbidden_upload_term}')
+
+for forbidden in ['Applies to ALL task types', 'All task types', 'code, config, debug, deploy, research']:
+    if forbidden in skill.split('---', 2)[1]:
+        errors.append(f'pua skill description is too broad and may false-trigger: {forbidden}')
+if not re.search(r'(Do not (?:trigger|use) for (?:normal|calm) first-attempt|Normal calm first-attempt requests are left alone)', skill.split('---', 2)[1]):
+    errors.append('pua skill description must explicitly exclude normal first-attempt requests')
+
+command = (root / 'commands/pua.md').read_text(encoding='utf-8')
+command_frontmatter = command.split('---', 2)[1]
+if not re.search(r'Use (?:only )?when the user (?:explicitly )?invokes /pua', command_frontmatter) or 'Normal calm first-attempt requests are left alone' not in command_frontmatter:
+    errors.append('pua command must describe intentional invocation/coaching and exclude ordinary requests')
+if '任务描述]' in command_frontmatter or '任意任务描述' in command_frontmatter:
+    errors.append('pua slash command frontmatter is too broad and may false-trigger')
+
+hook = (root / 'hooks/pua-loop-hook.sh').read_text(encoding='utf-8')
+if 'run_with_timeout 120 bash -c "$VERIFY_CMD"' not in hook:
+    errors.append('pua-loop hook does not use portable run_with_timeout for verify_command')
+if 'VERIFY_OUTPUT=$(timeout 120 bash -c "$VERIFY_CMD"' in hook:
+    errors.append('pua-loop hook still calls GNU timeout directly')
+
+helpers = (root / 'evals/test-helpers.sh').read_text(encoding='utf-8')
+trigger = (root / 'evals/run-trigger-test.sh').read_text(encoding='utf-8')
+if 'run_with_timeout()' not in helpers:
+    errors.append('eval helper missing portable run_with_timeout')
+if '    timeout 120 claude' in trigger or '    timeout 90 claude' in helpers:
+    errors.append('eval scripts still call GNU timeout directly')
+if '--output-format stream-json' in trigger and '--verbose' not in trigger:
+    errors.append('trigger eval uses stream-json without --verbose')
+if not re.search(r'PUA_CONFIG="\$EVAL_PUA_CONFIG"[^\n]*run_with_timeout 120 claude', trigger):
+    errors.append('trigger eval must use isolated PUA_CONFIG to avoid user ~/.pua/config.json')
+if 'successful_skill_invocations' not in (root / 'evals/inspect-claude-evidence.py').read_text() or '--skill pua' not in trigger:
+    errors.append('trigger eval must use linked native Skill evidence, not raw keyword fallback')
+if 'run_status' not in trigger or '</dev/null' not in trigger:
+    errors.append('trigger eval must preserve process status and close stdin')
+if 'EVAL_WORKSPACE="$RESULTS_DIR/workspace"' not in trigger or 'cd "$EVAL_WORKSPACE"' not in trigger:
+    errors.append('trigger eval must run in a neutral workspace, not the pua plugin repo')
+if 'PUA_CONFIG="$eval_config" run_with_timeout 90 claude' not in helpers:
+    errors.append('behavior eval must use isolated PUA_CONFIG to avoid user ~/.pua/config.json')
+
+if errors:
+    print('=== Release consistency FAILED ===')
+    for e in errors:
+        print(' -', e)
+    sys.exit(1)
+
+print('=== Release consistency OK ===')
+print('version =', version)
+print('manifests checked =', len(manifest_files))
+print('confidence/harness/agent terms checked =', len(required_terms))
+PY

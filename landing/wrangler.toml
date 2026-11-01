@@ -1,0 +1,10 @@
+name = "pua-skill"
+compatibility_date = "2025-04-01"
+pages_build_output_dir = "dist"
+
+# Static site only — all Pages Functions were removed along with data collection.
+# The former R2 bucket (UPLOADS / puaskill-upload), D1 database (DB / pua-uploads-db)
+# and GitHub OAuth vars are intentionally NOT bound here. If you are decommissioning
+# an existing deployment, delete the bucket, the database and the
+# GITHUB_CLIENT_SECRET / SESSION_SECRET secrets in the Cloudflare dashboard —
+# removing these bindings does not delete the stored data.
